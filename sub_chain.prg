@@ -50,7 +50,7 @@ subroutine create_aggr(string %name_aggr, string %chain_start, string %chain_end
 		%name_w={%g_weights}.@seriesname(!i)
 		genr {%name}_chn=na
 			
-		' %%% AJOUT LOUIS - 03/03/2016
+		
 		%_debser={%name}.@first
 		'_decfirstyear = december of the first year of available data for the series
 		%_decfirstyear=@otod(@dtoo(%_debser)+12-month(@dtoo(%_debser))) 
@@ -155,7 +155,6 @@ subroutine create_aggr_plus(string %name_aggr, string %chain_start, string %chai
 		%name_w={%g_weights}.@seriesname(!i)
 		genr {%name}_chn=na
 			
-		' %%% AJOUT LOUIS - 03/03/2016
 		%_debser={%name}.@first
 		'_decfirstyear = december of the first year of available data for the series
 		%_decfirstyear=@otod(@dtoo(%_debser)+12-month(@dtoo(%_debser))) 
