@@ -1,5 +1,5 @@
 'Name : sub_chain.prg
-'Author : Louis de Charsonville, stolen from ECB STIP subroutines
+'Author : Louis de Charsonville, inspired from ECB subroutines
 'Created : 06/11/2015
 'Last modification : 06/11/2015
 '-----------------------------
