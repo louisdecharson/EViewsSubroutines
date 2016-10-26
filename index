@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+
+<head>
+<title> EViews subroutines </title>
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
+<!-- Math Jack -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+</script>
+
+<style>
+body {
+    font-family :"Helvetica", "Arial";
+    color: black !important;
+    padding: 5% 5% 0 5%;
+    
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    border-bottom: solid grey;
+
+}
+
+a:hover {
+    text-decoration: none ;
+    background-color: grey ;
+    color: white ;
+}
+
+
+h1, h2, h3 {
+    font-weight: bold !important;
+    text-decoration: none !important;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+h1 a {
+    border-bottom: none;
+}
+
+
+h2 {
+    margin-top: 0px;
+    font-size: 24px
+}
+
+h3 {
+    font-size: 20px;
+    text-style: italic;
+}
+
+img {
+    padding: 5px;
+}
+
+ul {
+    padding-left: 0px;
+}
+li {
+    margin-left: 20px;
+    padding-left: 0px;
+}
+
+figcaption {
+    font-size: 12px;
+}
+pre {
+    color: rgb(189, 65, 71);
+    background-color: rgb(247, 247, 249);
+}
+td.nom_sub a {
+    color: rgb(189, 65, 71);
+    text-decoration: none;
+    border-bottom: none;
+
+}
+td.nom_sub a:hover {
+    background-color: rgb(189, 65, 71);
+    color: white;
+    text-decoration: none;
+    border-bottom: none;
+}
+
+.soon {
+    color: rgb(189, 65, 71);
+    font-style: italic;
+}
+</style>
+</head>
+
+
+
+<body>
+<h1>EViews Subroutines </h1>
+<h2>ELABORATION EN COURS</h2>
+<p><em>Ce dossier comprend plusieurs fichiers de routines EViews qui
+  comprennent eux-mêmes plusieurs sous-routines</em></p>
+
+<a href="https://github.com/louisdecharson/EViewsSubroutines">code</a>
+
+<div></div><br>
+
+<hr>
+<br>
+<h3 id=liste>Liste des subroutines</h3>
+<div class="soon">{ in progress }</div><br>
+<table class="table table-condensed table-hover">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Objet</th>
+      <th>Fichier</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="nom_sub"><a href ="#calcul_contrib">calcul_contrib</a></td>
+      <td>Calcule les contributions économétriques à partir d'une
+	équation (<em>version beta</em>)</td>
+      <td>sub_contrib.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub"><a href ="#inf_ma">inf_ma</a></td>
+      <td>Inverse un polynôme retard</td>
+      <td>sub_contrib.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub"><a href ="#contrib">contrib</a></td>
+      <td>Calcule la contribution économétrique d'une variable
+      exogène à une variable endogène d'une équation de
+      type ECM</td>
+      <td>sub_contrib.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub"><a href ="#contrib_d">contrib_d</a></td>
+      <td>Calcule la contribution économétrique d'une variable
+      exogène à une variable endogène d'une équation
+      <em>sans long-terme</em></td>
+      <td>sub_contrib.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub">ela</td>
+      <td>Calcule la fonction de réponse (IRF) d'une variable exogène
+      à l'endogène</td>
+      <td>sub_contrib.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub">create_aggr_plus</td>
+      <td>Calcule un indice agrégé chaîné annuellement à partir des indices élémentaires</td>
+      <td>sub_chain.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub">supprime</td>
+      <td>Supprime un objet uniquement s'il existe</td>
+      <td>sub_toolbox.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub">creationPage</td>
+      <td>Créé une nouvelle page dans un workfile et la remplace si
+      elle existe déjà </td>
+      <td>sub_toolbox.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub">futures</td>
+      <td>Permet de télécharger les futures de pétrole brut et de
+      faire la moyenne sur un nombre de jours donnés</td>
+      <td>sub_futures.prg</td>
+    </tr>
+  </tbody>
+
+</table>
+<br><hr><br>
+<h2>Subroutines de calcul des contributions économétriques</h2>
+Cet ensemble de routines est destiné à calculer les contributions
+économétriques. 
+<p>
+Il comprend plusieurs routines :
+</p>
+<ul>
+  <li><code>calcul_contrib</code> : cette subroutine calcule les
+  contributions économétriques d'une variable exogène à la variable endogène
+  d'une équation. </li>
+  <li><code>contrib</code> : cette subroutine calcule les
+  contributions économétriques d'une variable exogène à la variable
+  endogène d'une équation de type ECM.
+  <li><code>contrib_d</code> : cette subroutine calcule les
+  contributions économétriques d'une variable exogène à une variable
+  endogène sans "long terme".</li>
+  <li><code>inf_ma</code> :  cette subroutine inverse un polynôme</li>
+  <li><code>ela</code> : cette subroutine calcule la fonction de
+  réponse à un vecteur choc. </li>
+</ul>
+<br><div></div>
+<strong><em>Calcul des contributions économétriques</em></strong><br>
+Soit une équation du type :
+\begin{equation}
+A(L)Y_t = B(L)X_t + \epsilon_t 
+\end{equation}
+Où \(A(L)\) et \(B(L)\) sont des polynômes retards. En réecrivant
+l'équation, on peut faire apparaitre la contribution économétrique de
+\(X_t\) à \(Y_t\) :
+\begin{equation}
+Y_t = A(L)^{-1}B(L)X_t + \epsilon_t
+\end{equation} 
+Où \( A(L)^{-1}B(L)\) est un polynôme retard de degré infini et \(
+A(L)^{-1}B(L)X_t\) la contribution économétrique de \(X_t\) à \(Y_t\).
+Calculer les contributions économétriques de \(X\) à \(Y\) suppose
+donc de :
+<ul>
+  <li>Calculer le polynôme \(A(L)^{-1}B(L)\)</li>
+  <li>Calculer à chaque date \(t\) : \(
+A(L)^{-1}B(L)X_t\)</li>
+</ul>
+En théorie, comme \(A(L)^{-1}B(L)\) est un polynôme retard de degré
+infini, \(X\) doit avoir une infinité de valeurs passées. En
+pratique, le degré du polynôme est borné par le nombre de valeur
+passées disponibles de \(X\).
+<div></div>
+
+<br><hr></hr></br>
+
+<!-- SUBROUTINE INF MA -->
+<!------------------------>
+<h3 id="inf_ma">La subroutine inf_ma</h3>
+<p><code>inf_ma(string %vector_A, string %vector_B, string
+    %vector_C)</code></p>
+La subroutine <strong>inf_ma</strong> permet de calculer l'inverse
+    d'un polynôme retard. Elle prend trois vecteurs en arguments :
+<ul>
+  <li>Le premier est le vecteur des coefficients du polynôme retard
+  \(A(L)\)</li>
+  <li>le second est le vecteur des coefficients du polynôme retard
+  \(B(L)\)</li>
+  <li>le troisième est un vecteur vide qui sera rempli par la
+subroutine avec les coefficients du polynôme retard \(A(L)^{-1}B(L)\)
+dont le degré est égale à la dimension de C (pour augmenter la
+dimension du polynôme retard, il faut donc accroitre la dimension de C).</li>
+</ul>
+<div></div>
+<br>
+<strong>Exemple de code EViews</strong>
+<br>
+<pre><code>
+include "path\to\subroutine.prg"
+wfcreate u 1 100
+series varY = nrnd
+series varX = nrnd
+
+equation monEq.ls varY =  c(1) + c(2)*varX + c(3)*varY(-1)  + c(4)*varX(-2)
+vector(2) vect_A
+vect_A.fill 1,-c(3)
+vector(3) vect_B
+vect_B.fill c(2),0,c(4)
+vector(30) vect_C
+
+call inf_ma("vect_A","vect_B","vect_C")
+</code></pre>
+
+<div></div>
+<br><hr></hr></br>
+
+
+<!-- SUBROUTINE CONTRIB -->
+<!------------------------>
+<h3 id="contrib">La subroutine contrib</h3>
+<p><code>contrib (string %varX, string %vect_A, string %vect_B, string
+  %date_deb_contrib, string %date_fin_contrib)</code></p>
+La subroutine <strong>contrib</strong> calcule la contribution
+économétrique de \(\Delta{X_t}\) à \(\Delta{Y_t}\) où \(X_t\) est une
+variable exogène dans une modélisation de type <em>ECM</em> :
+\begin{align}
+\Delta{Y_t} &= \alpha + \gamma(Y_{t-1} - C(L)X_{t-1}) + D(L)\Delta{X_t} +
+E(L)\Delta{Y_t} + \epsilon_t \\
+\end{align}
+<p>Soit :</p>
+\begin{align}
+A(L)Y_t &= \alpha+B(L)X_t +\epsilon_t \\
+\end{align}
+<p>Avec :</p>
+\begin{align}
+A(L) &= (1-L-\gamma{L}-D(L)(1-L))\\
+B(L) &= -\gamma{LC(L)}+(1-L)*E(L)
+\end{align}
+<br>
+Cette subroutine prend 5 arguments :
+<ul>
+  <li>la variable \(X\)</li>
+  <li>le vecteur de coefficients du polynôme retard \(A(L)\)</li>
+  <li>le vecteur de coefficients du polynôme retard \(B(L)\)</li>
+  <li>la date de début des contributions</li>
+  <li>la date de fin des contributions</li>
+</ul>
+<div></div>
+<br>
+<strong>Exemple de code EViews</strong>
+<br>
+<pre><code>
+include "path\to\subroutine.prg"
+
+wfcreate M 1990 2010
+
+series varX = 100 + @trend + nrnd
+series varY = varX + nrnd
+
+equation eq.ls dlog(varY) c dlog(varX) log(varY(-1)) log(varX(-1)) 
+
+vector(2) vectA
+vectA.fill 1,-1-c(3)
+vector(2) vectB
+vectB.fill c(2),-c(2)+c(3)
+
+smpl @all
+series logvarX = log(varX)
+call contrib("logvarX", "vectA", "vectB", "2000Q1", "2010Q4") 
+</code></pre>
+
+<br><hr></hr></br>
+
+<!-- SUBROUTINE CONTRIB_D -->
+<!------------------------>
+<h3 id="contrib_d">La subroutine contrib_d</h3>
+<p><code>contrib_d(string %varX, string %vect_A, string %vect_B, string
+  %date_deb_contrib, string %date_fin_contrib)</code></p>
+
+La subroutine <strong>contrib_d</strong> calcule la contribution
+économétrique de \(\Delta{X_t}\) à \(\Delta{Y_t}\) où \(X_t\) est une
+variable exogène dans une modélisation sans <em>long-terme</em> :
+
+\begin{align}
+\Delta{Y_t} &= \alpha +  D(L)\Delta{X_t} +
+E(L)\Delta{Y_t} + \epsilon_t \\
+\end{align}
+
+<br>
+Cette subroutine prend 5 arguments :
+<ul>
+  <li>la variable \(X\)</li>
+  <li>le vecteur de coefficients du polynôme retard \(1-E(L)\)</li>
+  <li>le vecteur de coefficients du polynôme retard \(D(L)\)</li>
+  <li>la date de début des contributions</li>
+  <li>la date de fin des contributions</li>
+</ul>
+<div></div>
+<br>
+<strong>Exemple de code EViews</strong>
+<br>
+<pre><code>
+include "path\to\subroutine.prg"
+
+wfcreate M 1990 2010
+
+series varX = 100 + nrnd
+series varY = varX ^(nrnd)
+smpl 1990M2 2010
+series varY = varY(-1)^(0.3) * varX ^(0.5) + nrnd/10
+
+equation eq.ls dlog(varY) c dlog(varX) dlog(varY(-1)) 
+
+vector(3) vectE
+vectE.fill 1,-c(3),c(3)
+vector(2) vectD
+vectD.fill c(2)
+
+smpl @all
+series logvarX = log(varX)
+
+call contrib_d("logvarX", "vectE", "vectD", "2000Q1", "2010Q4") 
+</code></pre>
+
+</body>
+</html>
