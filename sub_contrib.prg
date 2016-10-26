@@ -1,4 +1,4 @@
-' Name : Sub_routine
+' Name : Sub_contrib
 ' Author : Louis de Charsonville
 ' Date created : 19/11/2015
 ' Last modified : 21/01/2015  ---- Change %debcontrib to prevent sample errors if user entered %debcontrib
@@ -56,13 +56,13 @@ subroutine flipud(string %vect)
 	
 	'data
 	!dim_vect=@rows({%vect})
-	vector(!dim_vect) v_temp
+	vector(!dim_vect) __v_temp
 	'computation
 	for !k_flip=1 to !dim_vect
-		v_temp(!k_flip)={%vect}(!dim_vect-!k_flip+1)
+		__v_temp(!k_flip)={%vect}(!dim_vect-!k_flip+1)
 	next
-	{%vect}=v_temp
-	delete v_temp
+	{%vect}=__v_temp
+	delete __v_temp
 endsub
 
 
@@ -87,24 +87,26 @@ subroutine contrib(string %var_x, string %vect_a, string %vect_b, string %deb_co
 	series myD_var_x=d({%var_x})
 	'If debcontrib is before the date of the first available data then we change %debcontrib accordingly
 	if @dtoo(%deb_contrib)<!first_obs then
-		%deb_contrib=%date
+		%_deb_contrib=%date
+	else 
+		%_deb_contrib = %deb_contrib
 	endif
 	
-	smpl %deb_contrib %fin_contrib
+	smpl %_deb_contrib %fin_contrib
 	genr contrib_{%var_x}=0
 	!nb_iter=@obssmpl
 	
 	'computation
 	for !kk=0 to !nb_iter-1
-		smpl %date %deb_contrib+!kk
-		vector vect=@convert(myD_var_x)
-		call flipud("vect") 'we flip up down vect so that the most recent value appears first in the vector
-		vector(@rows(vect)) vect_c 'vector of "infinite" moving average
-		rowvector tvect=@transpose(vect)
-		call inf_ma(%vect_a,%vect_b,"vect_c")
-		!buffer=tvect*vect_c
-		delete vect tvect
-		smpl %deb_contrib+!kk %deb_contrib+!kk
+		smpl %date %_deb_contrib+!kk
+		vector _vect=@convert(myD_var_x)
+		call flipud("_vect") 'we flip up down vect so that the most recent value appears first in the vector
+		vector(@rows(_vect)) _vect_c 'vector of "infinite" moving average
+		rowvector _tvect=@transpose(_vect)
+		call inf_ma(%vect_a,%vect_b,"_vect_c")
+		!buffer=_tvect*_vect_c
+		delete _vect _tvect _vect_c
+		smpl %_deb_contrib+!kk %_deb_contrib+!kk
 		series contrib_{%var_x}=!buffer
 	next
 	delete myD_var_x
@@ -137,21 +139,25 @@ subroutine contrib_d(string %var_x, string %vect_a, string %vect_b, string %deb_
 	
 	'data
 	'Preambule
-	smpl %deb_contrib %fin_contrib
-	genr contrib_{%var_x}=0
-	!nb_iter=@obssmpl	
+	
 	smpl @all
 	!first_obs=@ifirst({%var_x})
 	%date=@otod(!first_obs)
 	
 	'If debcontrib is before the date of the first available data then we change %debcontrib accordingly
 	if @dtoo(%deb_contrib)<!first_obs then
-		%deb_contrib=%date
+		%_deb_contrib = %date
+	else
+		%_deb_contrib = %deb_contrib
 	endif
+	
+	smpl %_deb_contrib %fin_contrib
+	genr contrib_{%var_x}=0
+	!nb_iter=@obssmpl
 	
 	'computation
 	for !kk=0 to !nb_iter-1
-		smpl %date %deb_contrib+!kk
+		smpl %date %_deb_contrib+!kk
 		vector vect=@convert({%var_x})
 		call flipud("vect") 'we flip up down tvect so that the most recent value appears first in the vector
 		vector(@rows(vect)) vect_c 'vector of "infinite" moving average
@@ -159,7 +165,7 @@ subroutine contrib_d(string %var_x, string %vect_a, string %vect_b, string %deb_
 		call inf_ma(%vect_a,%vect_b,"vect_c")
 		!buffer=tvect*vect_c
 		delete vect tvect
-		smpl %deb_contrib+!kk %deb_contrib+!kk
+		smpl %_deb_contrib+!kk %_deb_contrib+!kk
 		series contrib_{%var_x}=!buffer
 	next
 endsub
@@ -198,7 +204,7 @@ endsub
 
 subroutine calcul_contrib(string %equation, string %debEstim, string %finEstim, string %debContrib, string %finContrib,string %ecm, string %graph)
 	
-	' Pour toute Èquation de la forme a(L)y=b(L)x, la subroutine calcul les contributions de dx ‡ dy
+	' Pour toute √©quation de la forme a(L)y=b(L)x, la subroutine calcul les contributions de dx √† dy
 	
 	
 	' INPUT 
@@ -237,7 +243,7 @@ subroutine calcul_contrib(string %equation, string %debEstim, string %finEstim, 
 	%listvar=@wunique(%listvar0)
 	'string _listvar=%listvar
 
-	' Pour chaque variable, on crÈÈ une liste (un vecteur) comportant les positions de la variable dans l'Èquation
+	' Pour chaque variable, on cr√©√© une liste (un vecteur) comportant les positions de la variable dans l'√©quation
 	!_nbvar=@wcount(%listvar)
 	for !_kk=1 to !_nbvar
 		%var=@word(%listvar,!_kk)	
@@ -255,18 +261,17 @@ subroutine calcul_contrib(string %equation, string %debEstim, string %finEstim, 
 
 	' Estimation par OLS
 	smpl {%debEstim} {%finEstim}
-	'coef(!_nbwords) _ccc
-	equation _eqols_.ls {{%equation}} c
-	 _eqols_.makeresids _mesResidus
+	equation _eqols_{%equation}.ls {{%equation}} c
+	 _eqols_{%equation}.makeresids _mesResidus
 	'------------------------------
 
-	'Si %finContrib est superieure ‡ %finEstim prolonger les rÈsidus ‡ 0
+	'Si %finContrib est superieure √† %finEstim prolonger les r√©sidus √† 0
 	if @dtoo(%finContrib)>@dtoo(%finEstim) then
 		smpl %finEstim+1 %finContrib
 		series _mesResidus=0
 	endif
 
-	'On crÈe la liste des retards max
+	'On cr√©e la liste des retards max
 	for !_kk=1 to !_nbvar
 		%var=@word(%listvar,!_kk)
 		vector(@rows(_infovariable{!_kk})) _maxlag{!_kk}v
@@ -288,13 +293,14 @@ subroutine calcul_contrib(string %equation, string %debEstim, string %finEstim, 
 		next
 	endif		
 	
-	' Pour chaque variable exogËne, on calcule le vecteur associÈ au polynÙme retard et la contribution
+	' Pour chaque variable exog√®ne, on calcule le vecteur associ√© au polyn√¥me retard et la contribution
 	for !_vv=2 to !_nbvar
 		%var=@word(%listvar,!_vv)
+		smpl @all
 		vector(!_maxlag{!_vv}+2) _vecExog{!_vv}
 		for !_kk=1 to @rows(_infovariable{!_vv})
-			!_pos=_infovariable{!_vv}(!_kk)
-			!_lag=_infovar0(!_pos,2)
+			!_pos=_infovariable{!_vv}(!_kk) 'position dans l'√©quation
+			!_lag=_infovar0(!_pos,2) 'nombre de retard
 			_vecExog{!_vv}(!_lag+1)=_vecExog{!_vv}(!_lag+1)+c(!_pos-1)
 			if _infovar0(!_pos,1)=1 then _vecExog{!_vv}(!_lag+2)=_vecExog{!_vv}(!_lag+2)-c(!_pos-1) endif
 		next
@@ -313,8 +319,9 @@ subroutine calcul_contrib(string %equation, string %debEstim, string %finEstim, 
 		call contrib_d("_mesresidus","_vecEndog","_vecResid",%debContrib,%finContrib)
 		vector(1) _vecConst=1
 		smpl @all
-		series _maConstante=c(!_nbwords)
-		call contrib_d("_maConstante","_vecEndog","_vecConst",%debContrib,%finContrib)
+		series _maConst=c(!_nbwords)
+		call contrib_d("_maConst","_vecEndog","_vecConst",%debContrib,%finContrib)
+		delete _vecconst
 	endif 
 
 	if %graph="1" then
@@ -326,11 +333,11 @@ subroutine calcul_contrib(string %equation, string %debEstim, string %finEstim, 
 			%name="contrib_"+%var
 			_stackedList(!_kk-1)=%name
 		next
-		_stackedList(!_nbvar)="contrib__mesResidus"
-		_forGraph.add contrib__mesResidus
+		_stackedList(!_nbvar) = "contrib__mesresidus"
+		_forGraph.add contrib__mesresidus
 		if %ecm="0" then
-			_stackedList(!_nbvar+1)="contrib__maConstante"
-			_forGraph.add contrib__maConstante
+			_stackedList(!_nbvar+1)="contrib__maConst"
+			_forGraph.add contrib__maConst
 		endif
 		%_stackedList=@wjoin(_stackedList)
 		%_stackedList=@wdelim(%_stackedList," ",",")
@@ -341,8 +348,58 @@ subroutine calcul_contrib(string %equation, string %debEstim, string %finEstim, 
 		smpl {%debContrib} {%finContrib}
 		freeze(_z_{%equation}) _forGraph.mixed stackedbar({%_stackedList}) line({%_monEndog})
 		_z_{%equation}.options stackposneg
+		
+		delete _stackedlist _forGraph 
 	endif
-	delete _maxlag* _infovar* _stackedlist vecteurvar
+	delete _maxlag* _infovar*  vecteurvar _vecendog _vecexog* _vecresid 
 endsub
 
 
+'#################################################################
+
+' Calcul des elasticit√©s
+' =====================
+
+subroutine ela(string %vector_A, string %vector_B, string %vector_choc, string %suffix)
+	' We would like to compute answers of a change in X on Y when we could write A(L)Yt = B(L)Xt 
+	' where A and B are lag-polynomial.
+
+	' INPUT 
+	' ------
+	' (i)   vector_A and vector_B are lag polynomials of equation vector_A * Y(t)  = vector_b * X(t)
+	' (ii)  vector_choc is the choc vector. So for a permanent choc on X_t, vector_choc would be 1,0,0,0
+	' (iii) vector_response is the response vector, it should be the same length as vector
+
+	' OUTPUT
+	' ------
+	' (i) a response vector : elares
+	' (ii) a scalar which the last value of the response vector, so the final response : elarescum
+	
+
+	!__lenVectChoc = @rows({%vector_choc})
+	vector(!__lenVectChoc) ____irf
+	vector(!__lenVectChoc) elares_{%suffix}
+	vector(!__lenVectChoc) elarescum_{%suffix}
+	scalar ela_{%suffix}
+	call inf_ma(%vector_A,%vector_B,"____irf")
+
+	for !__zz = 1 to !__lenVectChoc
+		rowvector(!__zz) ____a
+		vector(!__zz) ____b
+		for !__yy = 1 to !__zz
+			____a.fill(o=!__yy) {%vector_choc}(!__zz-!__yy+1)
+			____b.fill(o=!__yy) ____irf(!__yy)
+		next
+		!____t = ____a*____b
+		elares_{%suffix}(!__zz) = !____t
+		
+		if !__zz = 1 then
+			elarescum_{%suffix}(!__zz) = !____t
+		else 
+			elarescum_{%suffix}(!__zz) = elarescum_{%suffix}(!__zz-1)+!____t
+		endif 
+		delete ____a ____b
+	next
+	ela_{%suffix} = elarescum_{%suffix}(!__lenVectChoc)
+	delete ____irf
+endsub
