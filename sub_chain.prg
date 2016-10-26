@@ -1,9 +1,9 @@
-'Name : sub_chain.prg
-'Author : Louis de Charsonville, inspired from ECB subroutines
-'Created : 06/11/2015
-'Last modification : 06/11/2015
-'-----------------------------
-'Description : the subroutines is creating a aggregated chain-linking index using level series and weights.  
+' Name : sub_chain.prg
+' Author : Louis de Charsonville, stolen from ECB STIP subroutines
+' Created : 06/11/2015
+' Last modification : 06/11/2015
+' -----------------------------
+' Description : the subroutines is creating a aggregated chain-linking index using level series and weights.  
 
 subroutine create_aggr(string %name_aggr, string %chain_start, string %chain_end, string %g_index, string %g_weights)
 	
@@ -50,7 +50,7 @@ subroutine create_aggr(string %name_aggr, string %chain_start, string %chain_end
 		%name_w={%g_weights}.@seriesname(!i)
 		genr {%name}_chn=na
 			
-		
+		' %%% AJOUT LOUIS - 03/03/2016
 		%_debser={%name}.@first
 		'_decfirstyear = december of the first year of available data for the series
 		%_decfirstyear=@otod(@dtoo(%_debser)+12-month(@dtoo(%_debser))) 
@@ -155,6 +155,7 @@ subroutine create_aggr_plus(string %name_aggr, string %chain_start, string %chai
 		%name_w={%g_weights}.@seriesname(!i)
 		genr {%name}_chn=na
 			
+		' %%% AJOUT LOUIS - 03/03/2016
 		%_debser={%name}.@first
 		'_decfirstyear = december of the first year of available data for the series
 		%_decfirstyear=@otod(@dtoo(%_debser)+12-month(@dtoo(%_debser))) 
@@ -212,5 +213,3 @@ subroutine create_aggr_plus(string %name_aggr, string %chain_start, string %chai
 	delete mean_{%base_year} 
 	delete {%name_aggr}_chn {%name_aggr}_chn_* _g_chain month
 endsub
-
-
