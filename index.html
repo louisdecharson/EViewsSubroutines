@@ -106,7 +106,7 @@ td.nom_sub a:hover {
 <body>
 <h1>EViews Subroutines </h1>
 	<br/>
-	<center><h2 style="color:red">ELABORATION EN COURS</h2></center>
+	<center><h2 style="color:rgb(189, 65, 71)">ELABORATION EN COURS</h2></center>
 <p><em>Ce dossier comprend plusieurs fichiers de routines EViews qui
   comprennent eux-mêmes plusieurs sous-routines</em></p>
 
@@ -380,6 +380,61 @@ series logvarX = log(varX)
 
 call contrib_d("logvarX", "vectE", "vectD", "2000Q1", "2010Q4") 
 </code></pre>
+
+<!-- SUBROUTINE CALCUL_CONTRIB -->
+<!------------------------>
+<h3 id="calcul_contrib">La subroutine calcul_contrib</h3>
+
+<p><code>calcul_contrib(string %equation, string %debEstim, string %finEstim, string %debContrib, string %finContrib,string %ecm, string %graph)</code></p>
+
+La subroutine <strong>calcul_contrib</strong> permet d'estimer et de
+calculer les contributions économétriques d'une équation.
+Cette subroutine prend 6 arguments :
+<ul>
+  <li>L'équation écrite sous forme de chaînes de caractères,
+  i.e. l'endogène et chacun des régresseurs à la suite et séparés
+  d'un espace</li>
+  <li>La date de début de l'estimation de l'équation</li>
+  <li>La date de fin de l'estimation de l'équation</li>
+  <li>La date de début du calcul des contributions économétriques</li>
+  <li>La date de fin des contributions économétriques </li>
+  <li>Booléen : L'équation est-elle sous une forme ECM ? </li>
+  <li>Booléen : faire le graphique des contributions économétriques</li>
+</ul>
+<div></div>
+<div class="alert alert-warning" role="alert">
+  <strong>Attention!</strong> Il y a plusieurs limitations :
+  <ul>
+    <li>L'écriture en log n'est pas supportée : créer une nouvelle séries log_x
+    au lieu d'écrire log(x)</li>
+    <li>Forcer la valeur des coefficients n'est pas non plus possible
+    : écrire y/x ou y-x ou y-0.3x ne fonctionnera pas. Si vous voulez
+    forcer la valeur des coefficients dans l'estimation, estimez d'abord l'équation, utilisez la subroutine contrib
+    ou contrib_d.</li>
+  </ul>
+</div>
+
+<br>
+<strong>Exemple de code EViews</strong>
+<br>
+<pre><code>
+include "path\to\subroutine.prg"
+
+wfcreate M 1990 2015
+' This line imports two series from Insee database using sdmx.herokuapp.com
+import(t=html) "http://sdmx.herokuapp.com/series/000455728+001567784" colhead=2 namepos=first
+rename num000455728 arabica
+rename num001567784 robusta
+series logarabica = log(arabica)
+series logrobusta = log(robusta)
+
+string myOLS = "d(logarabica) logarabica(-1) logrobusta(-1) d(logrobusta)"
+
+call calcul_contrib("myOLS","1990M01","2015M12","2010M01","2015M12","1","1")
+' Cette ligne va estimer l équation myOLS entre 1990M01 et 2015M12, 
+' calculer les contributions économétriques à cette équation 
+' entre 2010M01 et 2015M12 et ajouter un graphique.
+</code><pre>
 
 </body>
 </html>
