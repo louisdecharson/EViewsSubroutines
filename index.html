@@ -152,7 +152,7 @@ td.nom_sub a:hover {
       <td>sub_contrib.prg</td>
     </tr>
     <tr>
-      <td class="nom_sub">ela</td>
+      <td class="nom_sub"><a href="#ela">ela</a></td>
       <td>Calcule la fonction de réponse (IRF) d'une variable exogène
       à l'endogène</td>
       <td>sub_contrib.prg</td>
@@ -234,7 +234,7 @@ passées disponibles de \(X\).
 
 <!-- SUBROUTINE INF MA -->
 <!------------------------>
-<h3 id="inf_ma">La subroutine inf_ma</h3>
+<h3 id="inf_ma">Inf_ma</h3>
 <p><code>inf_ma(string %vector_A, string %vector_B, string
     %vector_C)</code></p>
 La subroutine <strong>inf_ma</strong> permet de calculer l'inverse
@@ -275,7 +275,7 @@ call inf_ma("vect_A","vect_B","vect_C")
 
 <!-- SUBROUTINE CONTRIB -->
 <!------------------------>
-<h3 id="contrib">La subroutine contrib</h3>
+<h3 id="contrib">Contrib</h3>
 <p><code>contrib (string %varX, string %vect_A, string %vect_B, string
   %date_deb_contrib, string %date_fin_contrib)</code></p>
 La subroutine <strong>contrib</strong> calcule la contribution
@@ -331,7 +331,7 @@ call contrib("logvarX", "vectA", "vectB", "2000Q1", "2010Q4")
 
 <!-- SUBROUTINE CONTRIB_D -->
 <!------------------------>
-<h3 id="contrib_d">La subroutine contrib_d</h3>
+<h3 id="contrib_d">Contrib_d</h3>
 <p><code>contrib_d(string %varX, string %vect_A, string %vect_B, string
   %date_deb_contrib, string %date_fin_contrib)</code></p>
 
@@ -382,7 +382,7 @@ call contrib_d("logvarX", "vectE", "vectD", "2000Q1", "2010Q4")
 
 <!-- SUBROUTINE CALCUL_CONTRIB -->
 <!------------------------>
-<h3 id="calcul_contrib">La subroutine calcul_contrib</h3>
+<h3 id="calcul_contrib">Calcul_contrib</h3>
 
 <p><code>calcul_contrib(string %equation, string %debEstim, string %finEstim, string %debContrib, string %finContrib,string %ecm, string %graph)</code></p>
 
@@ -433,7 +433,67 @@ call calcul_contrib("myOLS","1990M01","2015M12","2010M01","2015M12","1","1")
 ' Cette ligne va estimer l équation myOLS entre 1990M01 et 2015M12, 
 ' calculer les contributions économétriques à cette équation 
 ' entre 2010M01 et 2015M12 et ajouter un graphique.
-</code><pre>
+</code></pre>
+<br><hr></hr></br>
+
+<!-- SUBROUTINE ELA -->
+<!------------------------>
+<h3 id="ela">Ela</h3>
+
+<p><code>ela(string %vector_A, string %vector_B, string %vector_choc, string %suffix)</code></p>
+<p> La subroutine <strong>ela</strong> permet de calculer la réponse
+  d'une variable \(Y\) à un choc sur une variable \(X\) lorsque les
+  deux variables sont liées par une équation du type : \(A(L)Y_t = B(L)X_t\)</p>
+La subroutine prend quatre arguments : 
+<ul>
+  <li>le vecteur des coefficients du polynôme \(A(L)\)</li>
+  <li>le vecteur des coefficients du polynôme \(B(L)\)</li>
+  <li>le vecteur de choc. Pour un choc permanent sur le niveau de la
+  variable il faut définir le vecteur \((1,0,0,\dots,0)\). Pour un
+  choc temporaire il faut définir le vecteur
+  \((1,-1,0,\dots,0)\). <strong>À noter:</strong> la longueur du
+  vecteur choc est utilisé pour définir la longueur du vecteur de
+  réponse. Pour un vecteur de choc défini sur trois trimestres, la
+  réponse de la variable \(Y\) sera calculée sur trois
+  trimestres.</li> 
+  <li>le suffixe des éléments créés par la subroutine</li>
+</ul>
+Cette subroutine créé trois éléments :
+<ul>
+  <li><code>elares_{suffix}</code> : l'IRF de \(Y\) au choc sur \(X\) </li>
+  <li><code>elarescum_{suffix}</code> : la réponse cumulée de \(Y\) au choc
+  sur \(X\)</li>
+  <li><code>ela_{suffix}</code>: la dernière valeur de la réponse cumulée de \(Y\). </li>
+</ul>
+
+<br>
+<strong>Exemple de code EViews</strong>
+<br>
+<pre><code>
+include "path\to\subroutine.prg"
+
+wfcreate M 1990 2015
+import(t=html) "http://sdmx.herokuapp.com/series/000455728+001567784" colhead=2 namepos=first
+rename num000455728 arabica
+rename num001567784 robusta
+series logarabica = log(arabica)
+series logrobusta = log(robusta)
+
+equation eq.ls d(logarabica) c logarabica(-1) logrobusta(-1) d(logrobusta)
+vector(2) vA
+vA.fill 1,-1-eq.@coefs(2)
+vector(2) vB
+vB.fill eq.@coefs(4),-eq.@coefs(4)+eq.@coefs(3)
+
+vector(48) choc
+choc.fill(o=1) 1
+choc.fill(o=2,l) 0
+
+call ela("vA","VB","choc","chocrobusta")
+</code></pre>
+
+<br><hr></hr></br>
+
 
 </body>
 </html>
