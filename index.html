@@ -18,10 +18,11 @@
 
 <style>
 body {
-    font-family :"Helvetica", "Arial";
-    color: black !important;
-    padding: 5% 5% 0 5%;
-    
+     font-family: "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+     font-size: 1rem;
+     line-height: 1.5;
+     color: #373a3c;
+    padding: 5% 5% 0 5%;    
 }
 
 a {
@@ -38,13 +39,16 @@ a:hover {
 }
 
 
-h1, h2, h3 {
+h2, h3 {
     font-weight: bold !important;
     text-decoration: none !important;
 }
 
 h1 {
     margin-bottom: 20px;
+    font-size: 3.5rem;
+    font-weight: 400;
+    text-decoration: none !important;
 }
 
 h1 a {
@@ -78,9 +82,29 @@ figcaption {
     font-size: 12px;
 }
 pre {
-    color: rgb(189, 65, 71);
-    background-color: rgb(247, 247, 249);
+   background-color: #FDF6E4;;
 }
+.keyw {
+color: #859900;
+}
+.keyw2 {
+color: #b58900;
+}
+.var {
+color: #268bd2;
+}
+.comment {
+color: #93A1A1;
+}
+.string {
+color: #32A198;
+}
+
+.intro {
+padding: 8px;
+background-color: #ebeff0;
+}
+
 td.nom_sub a {
     color: rgb(189, 65, 71);
     text-decoration: none;
@@ -105,18 +129,17 @@ td.nom_sub a:hover {
 
 <body>
 <h1>EViews Subroutines </h1>
-	<br/>
-	<center><h2 style="color:rgb(189, 65, 71)">ELABORATION EN COURS</h2></center>
-	<br/>
+<hr/>
 
-<a href="https://github.com/louisdecharson/EViewsSubroutines">code</a>
-
-<div></div><br>
-
+<p>Cette page liste quelques subroutines EViews et fournit des
+  exemples sur leur utilisation.</p>
+<p>Le <a href="https://github.com/louisdecharson/EViewsSubroutines">code
+    source</a>.
+ </p>
 <hr>
 <br>
 <h3 id=liste>Liste des subroutines</h3>
-<div class="soon">{ in progress }</div><br>
+<!-- <div class="soon">{ in progress }</div><br> -->
 <table class="table table-condensed table-hover">
   <thead>
     <tr>
@@ -152,23 +175,29 @@ td.nom_sub a:hover {
       <td>sub_contrib.prg</td>
     </tr>
     <tr>
-      <td class="nom_sub"><a href="#ela">ela</a></td>
+      <td class="nom_sub"><a href ="#ela">ela</a></td>
       <td>Calcule la fonction de réponse (IRF) d'une variable exogène
       à l'endogène</td>
       <td>sub_contrib.prg</td>
     </tr>
     <tr>
-      <td class="nom_sub">create_aggr_plus</td>
+      <td class="nom_sub"><a href ="#aggr">create_aggr_plus</a></td>
       <td>Calcule un indice agrégé chaîné annuellement à partir des indices élémentaires</td>
       <td>sub_chain.prg</td>
     </tr>
     <tr>
-      <td class="nom_sub">supprime</td>
+      <td class="nom_sub"><a href="#sdmx">sdmx</a></td>
+      <td>Permet de télécharger des séries en utilisant le standard
+      SDMX (via sdmx.herokuapp.com)</td>
+      <td>sub_sdmx.prg</td>
+    </tr>
+    <tr>
+      <td class="nom_sub"><a href="#toolbox">supprime</a></td>
       <td>Supprime un objet uniquement s'il existe</td>
       <td>sub_toolbox.prg</td>
     </tr>
     <tr>
-      <td class="nom_sub">creationPage</td>
+      <td class="nom_sub"><a href="#toolbox">creationPage</a></td>
       <td>Créé une nouvelle page dans un workfile et la remplace si
       elle existe déjà </td>
       <td>sub_toolbox.prg</td>
@@ -179,11 +208,13 @@ td.nom_sub a:hover {
       faire la moyenne sur un nombre de jours donnés</td>
       <td>sub_futures.prg</td>
     </tr>
-  </tbody>
 
+  </tbody>
 </table>
 <br><hr><br>
-<h2>Subroutines de calcul des contributions économétriques</h2>
+
+<div class="intro">
+<h2>Calcul des contributions économétriques</h2>
 Cet ensemble de routines est destiné à calculer les contributions
 économétriques. 
 <p>
@@ -229,6 +260,7 @@ infini, \(X\) doit avoir une infinité de valeurs passées. En
 pratique, le degré du polynôme est borné par le nombre de valeur
 passées disponibles de \(X\).
 <div></div>
+</div>
 
 <br><hr></hr></br>
 
@@ -253,8 +285,8 @@ dimension du polynôme retard, il faut donc accroitre la dimension de C).</li>
 <br>
 <strong>Exemple de code EViews</strong>
 <br>
-<pre><code>
-include "path\to\subroutine.prg"
+<pre id="eviews"><code>
+include "path\to\subroutine"
 wfcreate u 1 100
 series varY = nrnd
 series varX = nrnd
@@ -307,8 +339,8 @@ Cette subroutine prend 5 arguments :
 <br>
 <strong>Exemple de code EViews</strong>
 <br>
-<pre><code>
-include "path\to\subroutine.prg"
+<pre id="eviews"><code>
+include "path\to\subroutine"
 
 wfcreate M 1990 2010
 
@@ -320,7 +352,7 @@ equation eq.ls dlog(varY) c dlog(varX) log(varY(-1)) log(varX(-1))
 vector(2) vectA
 vectA.fill 1,-1-c(3)
 vector(2) vectB
-vectB.fill c(2),-c(2)+c(4)
+vectB.fill c(2),-c(2)+c(3)
 
 smpl @all
 series logvarX = log(varX)
@@ -357,8 +389,8 @@ Cette subroutine prend 5 arguments :
 <br>
 <strong>Exemple de code EViews</strong>
 <br>
-<pre><code>
-include "path\to\subroutine.prg"
+<pre id="eviews"><code>
+include "path\to\subroutine"
 
 wfcreate M 1990 2010
 
@@ -379,6 +411,9 @@ series logvarX = log(varX)
 
 call contrib_d("logvarX", "vectE", "vectD", "2000Q1", "2010Q4") 
 </code></pre>
+
+
+<br><hr></hr></br>
 
 <!-- SUBROUTINE CALCUL_CONTRIB -->
 <!------------------------>
@@ -416,8 +451,8 @@ Cette subroutine prend 6 arguments :
 <br>
 <strong>Exemple de code EViews</strong>
 <br>
-<pre><code>
-include "path\to\subroutine.prg"
+<pre id="eviews"><code>
+include "path\to\subroutine"
 
 wfcreate M 1990 2015
 ' This line imports two series from Insee database using sdmx.herokuapp.com
@@ -434,6 +469,7 @@ call calcul_contrib("myOLS","1990M01","2015M12","2010M01","2015M12","1","1")
 ' calculer les contributions économétriques à cette équation 
 ' entre 2010M01 et 2015M12 et ajouter un graphique.
 </code></pre>
+
 <br><hr></hr></br>
 
 <!-- SUBROUTINE ELA -->
@@ -469,8 +505,8 @@ Cette subroutine créé trois éléments :
 <br>
 <strong>Exemple de code EViews</strong>
 <br>
-<pre><code>
-include "path\to\subroutine.prg"
+<pre id="eviews"><code>
+include "path\to\subroutine"
 
 wfcreate M 1990 2015
 import(t=html) "http://sdmx.herokuapp.com/series/000455728+001567784" colhead=2 namepos=first
@@ -495,5 +531,149 @@ call ela("vA","VB","choc","chocrobusta")
 <br><hr></hr></br>
 
 
+<!-- SUBROUTINE ELA -->
+<!------------------------>
+<h3 id="aggr">create_aggr_plus</h3>
+
+<p><code>create_aggr_plus(string %name_aggr, string %chain_start, string %chain_end, string %g_index, string %g_weights,string %base_year)</code></p>
+<p> La subroutine <strong>create_aggr_plus</strong> permet de calculer
+  un indice de prix chaîné agrégé à partir d'indices élémentaires. Les
+  séries d'indices élémentaires doivent être regroupées dans un objet
+  groupe. Les séries de poids associées aux indices élémentaires
+  doivent également être regroupées dans un groupe ordonné de la même
+  manière que le groupe des séries d'indices. Le
+  chaînage est annuel. Cette
+  subroutine prend 6 arguments:
+<ul>
+  <li><code>%name_aggr</code>: le nom que doit prendre de l'indice
+  agrégé créé.</li>
+  <li><code>%chain_start</code>: la date de début de calcul de l'indice
+  agrégé.</li>
+  <li><code>%chain_end</code>: la date de fin de calcul de
+  l'indice.</li>
+  <li><code>%g_index</code>: le nom du groupe comportant les séries
+  d'indices élémentaires.</li>
+  <li><code>%g_weigth</code>: le nom du groupe comportant les séries
+  de poids (l'ordre des séries doit être identiques à celui des
+  indices élémentaires).</li>
+  <li><code>%base_year</code>: l'année de base.</li>
+</ul>
+
+<br>
+<strong  id="ex_chain">Exemple de code EViews</strong>
+<br>
+<pre id="eviews"><code>
+include "path\to\subroutine"
+
+wfcreate M 1990 2015
+
+' Fetch data through sdmx.herokuapp.com
+call sdmx("insee","001762556","","i_fruits")
+call sdmx("insee","001762561","","i_legumes")
+call sdmx("insee","001762669","","p_fruits")
+call sdmx("insee","001762674","","p_legumes")
+
+' Creation des groupes contenant les series et les poids
+group gi i_fruits i_legumes
+group gp p_fruits p_legumes
+
+call create_aggr_plus("i_fruitslegumes","1996m01","2015m12","gi","gp","2015")
+
+</code></pre>
+<br/>
+<pre id="eviews"><code>
+' Création des indices IPCH alimentaire transformé et alimentaire non-transformé allemands et français
+include "path\to\subroutine"
+
+%debchain = "1996M01"
+%lastmonth = "2016M12"
+%data = "\dir\to\data"
+%foodun = "011200 011300 011600 011700"
+%foodpr = "011100 011400 011500 011800 011900 012100 012200 021100 021200 021300 022000"
+
+wfcreate M 1996 2016
+
+for %pays fr de
+	for %agg foodun foodpr
+		group gi_{%agg}_{%pays}
+		group gp_{%agg}_{%pays}
+		%list = %{%agg}
+		for %_serie {%list}
+			fetch(c=a,d=%data) {%pays}x{%_serie}
+			fetch(c=a,d=%data) {%pays}w{%_serie}
+			gi_{%agg}_{%pays}.add {%pays}x{%_serie}
+			gp_{%agg}_{%pays}.add {%pays}w{%_serie}
+		next
+		smpl @all
+		%serie_agg = %pays + "x" + %agg
+		%gi = "gi_" + %agg + "_" + %pays
+		%gp = "gp_" + %agg + "_" + %pays
+		call create_aggr_plus(%serie_agg,%debchain,%lastmonth,%gi,%gp,"2015")
+	next
+next
+</code>
+</pre>
+<br><hr></hr></br>
+
+<!-- SUBROUTINE SDMX  -->
+<h3 id="sdmx">SDMX</h3>
+<p><code>sdmx(string %provider, string %series, string %filters, string %rename)</code></p>
+<p>La subroutine <b>SDMX</b> permet de télécharger des séries SDMX
+en utilisant
+l'application <a href="http://sdmx.herokuapp.com">sdmx.herokuapp.com</a>. La
+subroutine prend 4 arguments:</p>
+<ul>
+  <li><code>%provider</code>: le nom du provider. Il peut prendre 6
+  valeurs: insee, eurostat, ecb, quandl, fred, bls. Pour les trois
+  dernières, il faut renseigner <i>dans le code</i> de la subroutine
+  vos clés pour les API de Quandl, Fred ou du BLS.</li>
+  <li><code>%serie</code>: nom de la ressource. Vous pouvez
+  télécharger des séries SDMX avec leur URL en laissant vide le
+  provider et en rentrant l'url de la ressource pour série (voir
+  exemple ci-dessous).</li>
+  <li><code>%filters</code>: éventuels filtres à appliquer à la
+  requête. Pour voir comment ceux-ci fonctionnent, reportez-vous à
+    l'aide de l'application sur
+  les <a href="http://sdmx.herokuapp.com/#filters">filtres</a></li>
+ <li><code>%rename</code>: nom de la série. Laisser vide si vous
+ souhaitez conserver le nom donné sur le site du provider.</li>
+</ul>
+<br>
+<strong>Exemple de code EViews</strong>
+<br>
+<pre id="eviews"><code>
+      wfcreate M 1990 2010
+      call sdmx("fred","unrate","","u")
+      call sdmx("ecb","EXR.M.E2.USD.EN00.A","?startPeriod=2003&endPeriod=2004","eonia")
+      call sdmx("","http://widukind-api.cepremap.org/api/v1/sdmx/BIS/data/DSRP/Q.BE.N","","debt_service_belgium")
+</code>
+</pre>
+
+<br><hr></hr></br>
+
+<h3 id="toolbox">Toolbox</h3>
+<p>Voici quelques subroutines réalisant des tâches basiques:</p>
+<ul>
+  <li><code>supprime(string %objs)</code>: supprime une liste d'objects dans un workfile uniquement s'ils
+  existent (par défaut EViews affiche une erreur si l'objet à
+  supprimer n'existe pas)</li>
+  <li><code>creationBase(string %_nom)</code>: crée une base et écrase la base si
+  elle existe déjà.</li>
+</ul>
+<br>
+<strong>Exemple de code EViews</strong>
+<br>
+<pre id="eviews"><code>
+include "path/to/subroutine"
+wfcreate U 1 100
+series s1 = nrnd
+series s2 = s1
+call supprime("s1 s2")
+</code>
+</pre>
+<br>
+<!-- SCRIPTS -->
+<script src="./readme.js"></script>
 </body>
 </html>
+
