@@ -2,7 +2,7 @@ function isInArray(it,arr) {
     return arr.indexOf(it.toLowerCase()) > -1;
 }
 const keyW = ['for','next','if','then','else','endif','subroutine','endsub','import','wfcreate','call','or','and','to','smpl','freeze','setelem','options','fill','ls','cov', 'rename']
-const keyW2 = ['include','series','group','vector','matrix','graph','equation'] // object
+const keyW2 = ['include','series','group','vector','matrix','graph','equation','string'] // object
 
 
 function colorCode(node) {
